@@ -1,4 +1,4 @@
-#Postgres Pub/Sub
+# Postgres Pub/Sub
 
 Code sample to use Postgresql Notify and Listen commands as a Pub/Sub server, with C# and Npgsql.
 
@@ -6,7 +6,7 @@ Code sample to use Postgresql Notify and Listen commands as a Pub/Sub server, wi
 
 You can start a Postgresql server with the following docker command :
 
-	docker run -d -p 5432:5432 --name $name -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=$password postgres:latest
+	docker run -d -p 5432:5432 --name pubsub-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=pwd1234 postgres:latest
 
 You can now start the two console apps. One will send a message, the second will display the message received.
 
@@ -47,3 +47,13 @@ Now you can start listening the channel :
 
 	var cmd = dataSource.CreateCommand("LISTEN channel", connection);	
 	await cmd.ExecuteNonQueryAsync();
+
+The Notification event isn't raised in real time , see [docs](https://www.npgsql.org/doc/wait.html)) :  
+"Since asynchronous notifications are rarely used and processing can be complex, Npgsql only processes notification messages as part of regular (synchronous) query interaction"
+
+Here I want real time notifications, so I used the `WaitAsync` method to be sure the event is raised as soon as the message is sent to a channel :
+
+    while (true)
+    {
+        await connection.WaitAsync();
+    }
