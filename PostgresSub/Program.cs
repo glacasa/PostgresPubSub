@@ -25,7 +25,7 @@ var builder = new HostBuilder()
     })
     .ConfigureServices((ctx, services) =>
     {
-        services.AddTransient<PostgresqlListener>();
+        services.AddSingleton<PostgresqlListener>();
     })
     .UseConsoleLifetime();
 
